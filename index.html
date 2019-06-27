@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Bank Search Application</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-route.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="http://demo.expertphp.in/js/jquery.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="app.js"></script>
+    <script src="pagination.js"></script>
+    <link href="style.css" rel="stylesheet" />
+</head>
+
+<body ng-app="angularApp" ng-controller="angularController">
+    <div class="container">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" >Bank Search Application</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li class="{{activeHome}}"><a class="home" ng-click="myVar='home'; activeHome='active';activeFavourite=''">Home</a></li>
+                    <li class="{{activeFavourite}}"><a class="favourite-saved-item" ng-click="myVar='favourites'; getFavourite();activeHome=''; activeFavourite='active'">Favourite</a></li>
+                </ul>
+            </div>
+        </nav>
+        <div ng-switch="myVar">
+            <div ng-switch-when="home">
+                <div style="display:inline-block">
+                    <label>Select City List : </label>
+                    <select name="City" ng-model="$parent.citymodel" ng-change="getItems()">
+                        <option value="MUMBAI">Mumbai</option>
+                        <option value="CHENNAI">Chennai</option>
+                        <option value="BANGALORE">Bangalore</option>
+                        <option value="KOLKATA">Kolkata</option>
+                        <option value="PUNE">Pune</option>
+                    </select>
+                </div>
+                <div style="display:inline-block;padding-left:30px;padding-bottom:10px">
+                    <label> Search Bank Name : </label>
+                    <input type="text" ng-model="$parent.bankName" >
+                </div>
+                <div style="display:inline-block;padding-left:30px;padding-bottom:10px">
+                    <label> Results Per Page : </label>
+                    <input type="number" ng-model="resultsPerPage" min=1>
+                </div>
+                <div class="panel panel-primary">
+                    <table>
+                        <tr style="background-color:aqua">
+                            <th style="width: 70px;">IFSC</th>
+                            <th style="width:200px;">Bank Name</th>
+                            <th style="width:150px;">Branch</th>
+                            <th style="width: 70px;">City</th>
+                        </tr>
+                        <tr dir-paginate="item in items.data | filter: searchItem | itemsPerPage: resultsPerPage">
+                            <td style="width: 70px;">{{item.ifsc}}</td>
+                            <td style="width:200px;">
+                                {{item.bank_name}}
+                                <div class="favourite-item" ng-if="ifExists(item.ifsc) ">
+                                    <i class=" favourite-check glyphicon glyphicon-star" style="margin-left:10px;"
+                                        ng-model="favouriteModel" ng-click="setFavourite(item) "></i>
+                                </div>
+                                <div class="favourite-item" ng-if="ifNotExists(item.ifsc)">
+                                    <i class="favourite-check glyphicon glyphicon-star-empty" style="margin-left:10px;"
+                                        ng-model="favouriteModel" ng-click="setFavourite(item) "></i>
+                                </div>
+                            </td>
+                            <td style="width: 150px;">{{item.branch}}</td>
+                            <td style="width: 70px;">{{item.city}}</td>
+                        </tr>
+                    </table>
+                </div>
+                <dir-pagination-controls class=pagination-custom max-size="5" direction-links="true"
+                    boundary-links="true">
+                </dir-pagination-controls>
+            </div>
+            <div ng-switch-when="favourites">
+                <h3>Favourite Banks </h3>
+                <div class="panel panel-primary" ng-if="($parent.savedData !== undefined)">
+                    <table>
+                        <tr style="background-color:aqua">
+                            <th style="width: 70px;">IFSC</th>
+                            <th style="width:200px;">Bank Name</th>
+                            <th style="width:150px;">Branch</th>
+                            <th style="width: 70px;">City</th>
+                        </tr>
+                        <tr ng-repeat="sd in savedData">
+                            <td style="width: 70px;" ng-repeat="s in sd">{{s.ifsc}}</td>
+                            <td style="width:200px;" ng-repeat="s in sd">{{s.bank_name}}</td>
+                            <td style="width: 150px;" ng-repeat="s in sd">{{s.branch}}</td>
+                            <td style="width: 70px;" ng-repeat="s in sd">{{s.city}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
